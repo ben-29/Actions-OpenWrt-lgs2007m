@@ -12,7 +12,7 @@ index 0c6b9e60b..e7c7992e9 100644
  	mmcpart="$(find_mmc_part 0:APPSBLENV)"
  	[ -n "$mmcpart" ] && \
 diff --git a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-similarity index 94%
+similarity index 95%
 rename from target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts
 rename to target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
 index c09f77e65..e6272abfb 100644
@@ -65,14 +65,12 @@ index 436f8127e..85cba0765 100644
  		ethernet0 = "/soc/dp1";
  		ethernet1 = "/soc/dp2";
 diff --git a/target/linux/qualcommax/image/ipq60xx.mk b/target/linux/qualcommax/image/ipq60xx.mk
-index 4f2e29b50..d24348743 100644
+index 1228c1900..065ef9af2 100644
 --- a/target/linux/qualcommax/image/ipq60xx.mk
 +++ b/target/linux/qualcommax/image/ipq60xx.mk
-@@ -18,9 +18,8 @@ define Device/UbiFit
- endef
- 
+@@ -1,7 +1,6 @@
  define Device/EmmcImage
--	IMAGES := factory.bin recovery.bin sysupgrade.bin
+-	IMAGES += factory.bin recovery.bin
 -	IMAGE/factory.bin := append-kernel | pad-to 12288k | append-rootfs | append-metadata
 -	IMAGE/recovery.bin := append-kernel | pad-to 6144k | append-rootfs | append-metadata
 +	IMAGES := factory.bin sysupgrade.bin
@@ -80,7 +78,37 @@ index 4f2e29b50..d24348743 100644
  	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
  endef
  
-@@ -62,7 +61,7 @@ define Device/glinet_gl-axt1800
+@@ -28,22 +27,32 @@ define Device/glinet_gl-common
+ endef
+ 
+ define Device/glinet_gl-ax1800
+-	$(call Device/glinet_gl-common)
++	$(call Device/FitImage)
++	$(call Device/UbiFit)
++	DEVICE_VENDOR := GL.iNet
+ 	DEVICE_MODEL := GL-AX1800
++	BLOCKSIZE := 128k
++	PAGESIZE := 2048
++	DEVICE_DTS_CONFIG := config@cp03-c1
++	SOC := ipq6000
+ 	DEVICE_PACKAGES := ipq-wifi-glinet_gl-ax1800
+-	SUPPORTED_DEVICES += glinet,ax1800
+ endef
+ TARGET_DEVICES += glinet_gl-ax1800
+ 
+ define Device/glinet_gl-axt1800
+-	$(call Device/glinet_gl-common)
++	$(call Device/FitImage)
++	$(call Device/UbiFit)
++	DEVICE_VENDOR := GL.iNet
+ 	DEVICE_MODEL := GL-AXT1800
+-	DEVICE_PACKAGES := ipq-wifi-glinet_gl-axt1800 kmod-hwmon-pwmfan
+-	SUPPORTED_DEVICES += glinet,axt1800
++	BLOCKSIZE := 128k
++	PAGESIZE := 2048
++	DEVICE_DTS_CONFIG := config@cp03-c1
++	SOC := ipq6000
++	DEVICE_PACKAGES := ipq-wifi-glinet_gl-axt1800 kmod-hwmon-gpiofan
  endef
  TARGET_DEVICES += glinet_gl-axt1800
  
@@ -89,16 +117,19 @@ index 4f2e29b50..d24348743 100644
  	$(call Device/FitImage)
  	$(call Device/EmmcImage)
  	DEVICE_VENDOR := JDCloud
-@@ -73,7 +72,7 @@ define Device/jdcloud_re-cs-02
+@@ -52,9 +61,9 @@ define Device/jdcloud_re-cs-02
+ 	BLOCKSIZE := 64k
+ 	KERNEL_SIZE := 6144k
  	DEVICE_DTS_CONFIG := config@cp03-c3
- 	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax6600 kmod-ath11k-pci ath11k-firmware-qcn9074
+-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-02 kmod-ath11k-pci ath11k-firmware-qcn9074
++	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax6600 kmod-ath11k-pci ath11k-firmware-qcn9074
  endef
 -TARGET_DEVICES += jdcloud_re-cs-02
 +TARGET_DEVICES += jdcloud_ax6600
  
  define Device/jdcloud_re-cs-07
  	$(call Device/FitImage)
-@@ -88,7 +87,7 @@ define Device/jdcloud_re-cs-07
+@@ -69,7 +78,7 @@ define Device/jdcloud_re-cs-07
  endef
  TARGET_DEVICES += jdcloud_re-cs-07
  
@@ -107,7 +138,7 @@ index 4f2e29b50..d24348743 100644
  	$(call Device/FitImage)
  	$(call Device/EmmcImage)
  	DEVICE_VENDOR := JDCloud
-@@ -99,7 +98,7 @@ define Device/jdcloud_re-ss-01
+@@ -80,7 +89,7 @@ define Device/jdcloud_re-ss-01
  	DEVICE_DTS_CONFIG := config@cp03-c2
  	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax1800pro
  endef
@@ -180,7 +211,7 @@ diff --git a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh 
 index 6cb255df7..4973bdbec 100644
 --- a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
 +++ b/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
-@@ -17,8 +17,8 @@ platform_do_upgrade() {
+@@ -17,9 +17,9 @@ platform_do_upgrade() {
  	xiaomi,rm1800)
  		nand_do_upgrade "$1"
  		;;
