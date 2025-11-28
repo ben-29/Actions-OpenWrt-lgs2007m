@@ -1,21 +1,8 @@
-diff --git a/package/boot/uboot-envtools/files/qualcommax b/package/boot/uboot-envtools/files/qualcommax
-index 0c6b9e60b..e7c7992e9 100644
---- a/package/boot/uboot-envtools/files/qualcommax
-+++ b/package/boot/uboot-envtools/files/qualcommax
-@@ -48,6 +48,8 @@ qnap,301w)
- 	[ -n "$idx" ] && \
- 		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x20000" "0x20000" "1"
- 	;;
-+jdcloud,ax6600|\
-+jdcloud,ax1800-pro|\
- redmi,ax5-jdcloud)
- 	mmcpart="$(find_mmc_part 0:APPSBLENV)"
- 	[ -n "$mmcpart" ] && \
 diff --git a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-similarity index 95%
+similarity index 94%
 rename from target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts
 rename to target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-index c09f77e65..e6272abfb 100644
+index b53ae071b..e6272abfb 100644
 --- a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts
 +++ b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
 @@ -11,14 +11,14 @@
@@ -37,11 +24,20 @@ index c09f77e65..e6272abfb 100644
  
  		ethernet1 = "/soc/dp2";
  		ethernet2 = "/soc/dp3";
+@@ -212,7 +212,6 @@
+ 
+ &wifi {
+ 	status = "okay";
+-
+-	qcom,ath11k-calibration-variant = "JDC-RE-SS-01";
++	qcom,ath11k-calibration-variant = "JDC-AX1800-Pro";
+ 	qcom,ath11k-fw-memory-mode = <1>;
+ };
 diff --git a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
-similarity index 96%
+similarity index 93%
 rename from target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts
 rename to target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
-index 436f8127e..85cba0765 100644
+index 0e7f2750b..85cba0765 100644
 --- a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts
 +++ b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
 @@ -11,15 +11,15 @@
@@ -64,8 +60,37 @@ index 436f8127e..85cba0765 100644
  
  		ethernet0 = "/soc/dp1";
  		ethernet1 = "/soc/dp2";
+@@ -143,17 +143,15 @@
+ 	perst-gpio = <&tlmm 53 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ 
+-	pcie@0 {
+-		reg = <0x0 0x0 0x0 0x0 0x0>;
+-		bus-range = <0x01 0xff>;
++	bridge@0,0 {
++		reg = <0x00000000 0 0 0 0>;
+ 		#address-cells = <3>;
+ 		#size-cells = <2>;
+ 		ranges;
+ 
+-		wifi@0,0 {
++		wifi@1,0 {
+ 			compatible = "pci17cb,1104";
+ 			reg = <0x00010000 0 0 0 0>;
+-			qcom,ath11k-calibration-variant = "JDC-RE-CS-02";
+ 		};
+ 	};
+ };
+@@ -290,6 +288,5 @@
+ 
+ &wifi {
+ 	status = "okay";
+-
+-	qcom,ath11k-calibration-variant = "JDC-RE-CS-02";
++	qcom,ath11k-calibration-variant = "JDC-AX6600";
+ };
 diff --git a/target/linux/qualcommax/image/ipq60xx.mk b/target/linux/qualcommax/image/ipq60xx.mk
-index 1228c1900..065ef9af2 100644
+index f63640814..065ef9af2 100644
 --- a/target/linux/qualcommax/image/ipq60xx.mk
 +++ b/target/linux/qualcommax/image/ipq60xx.mk
 @@ -1,7 +1,6 @@
@@ -121,7 +146,7 @@ index 1228c1900..065ef9af2 100644
  	BLOCKSIZE := 64k
  	KERNEL_SIZE := 6144k
  	DEVICE_DTS_CONFIG := config@cp03-c3
--	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-02 kmod-ath11k-pci ath11k-firmware-qcn9074
+-	DEVICE_PACKAGES := ath11k-firmware-qcn9074 ipq-wifi-jdcloud_re-cs-02 kmod-ath11k-pci
 +	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax6600 kmod-ath11k-pci ath11k-firmware-qcn9074
  endef
 -TARGET_DEVICES += jdcloud_re-cs-02
@@ -138,9 +163,12 @@ index 1228c1900..065ef9af2 100644
  	$(call Device/FitImage)
  	$(call Device/EmmcImage)
  	DEVICE_VENDOR := JDCloud
-@@ -80,7 +89,7 @@ define Device/jdcloud_re-ss-01
+@@ -78,9 +87,9 @@ define Device/jdcloud_re-ss-01
+ 	BLOCKSIZE := 64k
+ 	KERNEL_SIZE := 6144k
  	DEVICE_DTS_CONFIG := config@cp03-c2
- 	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax1800pro
+-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-ss-01
++	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax1800pro
  endef
 -TARGET_DEVICES += jdcloud_re-ss-01
 +TARGET_DEVICES += jdcloud_ax1800-pro
