@@ -79,6 +79,14 @@ jobs:
         haskell: false
         large-packages: false
         swap-storage: false
+        
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: 下载固件源码
       working-directory: /workdir
