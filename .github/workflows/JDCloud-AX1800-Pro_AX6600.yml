@@ -166,7 +166,16 @@ jobs:
         run: |
           cd openwrt
           matched_lines=$(grep '^CONFIG_TARGET.*DEVICE_.*=y' .config | grep -v 'PER_DEVICE' | grep -v 'DEVICE_PACKAGES')
+          echo "过滤后的设备配置: $matched_lines"
           mapfile -t devices < <(echo "$matched_lines" | sed -n 's/.*DEVICE_\([^=]*\)=y/\1/p')
+          echo "提取到的设备: ${devices[*]}"
+          echo "设备数量: ${#devices[@]}"
+          
+          echo "bin/targets 完整目录内容："
+          find bin/targets -maxdepth 3 -print || true
+      
+          echo "bin/targets/*/* 匹配结果："
+          printf '%s\n' bin/targets/*/*
           cd bin/targets/*/*
           rm -rf packages
           for val in "${devices[@]}"; do
@@ -180,8 +189,12 @@ jobs:
                           fi
                   done
           done
+          echo "整理后的文件："
+          ls -lah
+
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
+          
 
       - name: 打包上传固件到Actions Artifacts
         uses: actions/upload-artifact@main
