@@ -44,7 +44,7 @@ env:
 
 jobs:
   build:
-    runs-on: [ubuntu-24.04, self-hosted]
+    runs-on: [self-hosted, Linux, X64, docker]
 
     permissions:
       contents: write
