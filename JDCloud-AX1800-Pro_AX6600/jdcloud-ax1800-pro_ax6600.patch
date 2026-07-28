@@ -1,99 +1,68 @@
-diff --git a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-similarity index 94%
-rename from target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts
-rename to target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-index b53ae071b..e6272abfb 100644
---- a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-re-ss-01.dts
-+++ b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6000-ax1800-pro.dts
-@@ -11,14 +11,14 @@
+diff --git a/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network b/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
+index 7d8c3ab54..5e421ed54 100644
+--- a/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
++++ b/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
+@@ -11,27 +11,22 @@ ipq60xx_setup_interfaces()
+ 	local board="$1"
  
- / {
- 	model = "JDCloud RE-SS-01 (AX1800 Pro)";
--	compatible = "jdcloud,re-ss-01", "qcom,ipq6018";
-+	compatible = "jdcloud,ax1800-pro", "qcom,ipq6018";
+ 	case "$board" in
+-	anysafe,e1|\
+ 	cmiot,ax18|\
+ 	jdcloud,re-cs-07|\
+-	jdcloud,re-ss-01|\
+-	philips,ly1800|\
++	jdcloud,ax1800-pro|\
+ 	qihoo,360v6|\
+ 	redmi,ax5-*|\
+ 	xiaomi,rm1800)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+ 		;;
+-	dptech,ap3000-2c|\
+-	glinet,gl-axt1800|\
+-	link,nn6000-v1)
+-		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
+-		;;
+ 	glinet,gl-ax1800|\
+ 	jdcloud,re-cs-02|\
+-	link,nn6000-v2|\
+ 	linksys,mr7350)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
+ 		;;
++	glinet,gl-axt1800)
++		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
++		;;
+ 	*)
+ 		echo "Unsupported hardware. Network interfaces not initialized"
+ 		;;
+diff --git a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh b/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
+index c820e5217..b6378f532 100644
+--- a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
++++ b/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
+@@ -10,7 +10,6 @@ platform_check_image() {
  
- 	aliases {
- 		serial0 = &blsp1_uart3;
--		led-boot = &led_status_green;
-+		led-boot = &led_status_red;
- 		led-failsafe = &led_status_red;
--		led-running = &led_status_blue;
--		led-upgrade = &led_status_red;
-+		led-running = &led_status_green;
-+		led-upgrade = &led_status_green;
- 
- 		ethernet1 = "/soc/dp2";
- 		ethernet2 = "/soc/dp3";
-@@ -212,7 +212,6 @@
- 
- &wifi {
- 	status = "okay";
--
--	qcom,ath11k-calibration-variant = "JDC-RE-SS-01";
-+	qcom,ath11k-calibration-variant = "JDC-AX1800-Pro";
- 	qcom,ath11k-fw-memory-mode = <1>;
- };
-diff --git a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
-similarity index 93%
-rename from target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts
-rename to target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
-index 0e7f2750b..85cba0765 100644
---- a/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-re-cs-02.dts
-+++ b/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6010-ax6600.dts
-@@ -11,15 +11,15 @@
- 
- / {
- 	model = "JDCloud RE-CS-02 (AX6600)";
--	compatible = "jdcloud,re-cs-02", "qcom,ipq6018";
-+	compatible = "jdcloud,ax6600", "qcom,ipq6018";
- 
- 	aliases {
- 		serial0 = &blsp1_uart3;
- 		serial1 = &blsp1_uart6;
--		led-boot = &led_status_green;
-+		led-boot = &led_status_red;
- 		led-failsafe = &led_status_red;
--		led-running = &led_status_blue;
--		led-upgrade = &led_status_red;
-+		led-running = &led_status_green;
-+		led-upgrade = &led_status_green;
- 
- 		ethernet0 = "/soc/dp1";
- 		ethernet1 = "/soc/dp2";
-@@ -143,17 +143,15 @@
- 	perst-gpio = <&tlmm 53 GPIO_ACTIVE_LOW>;
- 	status = "okay";
- 
--	pcie@0 {
--		reg = <0x0 0x0 0x0 0x0 0x0>;
--		bus-range = <0x01 0xff>;
-+	bridge@0,0 {
-+		reg = <0x00000000 0 0 0 0>;
- 		#address-cells = <3>;
- 		#size-cells = <2>;
- 		ranges;
- 
--		wifi@0,0 {
-+		wifi@1,0 {
- 			compatible = "pci17cb,1104";
- 			reg = <0x00010000 0 0 0 0>;
--			qcom,ath11k-calibration-variant = "JDC-RE-CS-02";
- 		};
- 	};
- };
-@@ -290,6 +288,5 @@
- 
- &wifi {
- 	status = "okay";
--
--	qcom,ath11k-calibration-variant = "JDC-RE-CS-02";
-+	qcom,ath11k-calibration-variant = "JDC-AX6600";
- };
+ platform_do_upgrade() {
+ 	case "$(board_name)" in
+-	anysafe,e1|\
+ 	cmiot,ax18|\
+ 	glinet,gl-ax1800|\
+ 	glinet,gl-axt1800|\
+@@ -20,10 +19,7 @@ platform_do_upgrade() {
+ 		;;
+ 	jdcloud,re-cs-02|\
+ 	jdcloud,re-cs-07|\
+-	jdcloud,re-ss-01|\
+-	link,nn6000-v1|\
+-	link,nn6000-v2|\
+-	philips,ly1800|\
++	jdcloud,ax1800-pro|\
+ 	redmi,ax5-jdcloud)
+ 		kernelname="0:HLOS"
+ 		rootfsname="rootfs"
 diff --git a/target/linux/qualcommax/image/ipq60xx.mk b/target/linux/qualcommax/image/ipq60xx.mk
-index f63640814..1f68735a3 100644
+index 4be530e91..1f68735a3 100644
 --- a/target/linux/qualcommax/image/ipq60xx.mk
 +++ b/target/linux/qualcommax/image/ipq60xx.mk
-@@ -1,7 +1,6 @@
+@@ -1,24 +1,9 @@
  define Device/EmmcImage
 -	IMAGES += factory.bin recovery.bin
 -	IMAGE/factory.bin := append-kernel | pad-to 12288k | append-rootfs | append-metadata
@@ -103,19 +72,58 @@ index f63640814..1f68735a3 100644
  	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
  endef
  
-@@ -28,18 +27,28 @@ define Device/glinet_gl-common
+-define Device/anysafe_e1
+-	$(call Device/FitImage)
+-	$(call Device/UbiFit)
+-	DEVICE_VENDOR := AnySafe
+-	DEVICE_MODEL := E1
+-	BLOCKSIZE := 128k
+-	PAGESIZE := 2048
+-	DEVICE_DTS := ipq6010-anysafe-e1
+-	DEVICE_DTS_CONFIG := config@cp01-c3
+-	DEVICE_PACKAGES := ath11k-firmware-qcn9074 ipq-wifi-anysafe_e1 \
+-		kmod-ath11k-pci kmod-hwmon-pwmfan
+-endef
+-TARGET_DEVICES += anysafe_e1
+-
+ define Device/cmiot_ax18
+ 	$(call Device/FitImage)
+ 	$(call Device/UbiFit)
+@@ -31,42 +16,39 @@ define Device/cmiot_ax18
  endef
+ TARGET_DEVICES += cmiot_ax18
  
- define Device/glinet_gl-ax1800
--	$(call Device/glinet_gl-common)
-+	$(call Device/FitImage)
-+	$(call Device/UbiFit)
+-define Device/dptech_ap3000-2c
++define Device/glinet_gl-common
+ 	$(call Device/FitImage)
+ 	$(call Device/UbiFit)
+-	DEVICE_VENDOR := DPtech
+-	DEVICE_MODEL := AP3000-2C
 +	DEVICE_VENDOR := GL.iNet
- 	DEVICE_MODEL := GL-AX1800
-+	BLOCKSIZE := 128k
-+	PAGESIZE := 2048
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
 +	DEVICE_DTS_CONFIG := config@cp03-c1
-+	SOC := ipq6000
+ 	SOC := ipq6000
+-	DEVICE_DTS_CONFIG := config@cp03-c1-DP019
+-	DEVICE_PACKAGES := ipq-wifi-dptech_ap3000-2c
+ endef
+-TARGET_DEVICES += dptech_ap3000-2c
+ 
+-define Device/glinet_gl-common
++define Device/glinet_gl-ax1800
+ 	$(call Device/FitImage)
+ 	$(call Device/UbiFit)
+ 	DEVICE_VENDOR := GL.iNet
++	DEVICE_MODEL := GL-AX1800
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	DEVICE_DTS_CONFIG := config@cp03-c1
+ 	SOC := ipq6000
+-endef
+-
+-define Device/glinet_gl-ax1800
+-	$(call Device/glinet_gl-common)
+-	DEVICE_MODEL := GL-AX1800
  	DEVICE_PACKAGES := ipq-wifi-glinet_gl-ax1800
 -	SUPPORTED_DEVICES += glinet,ax1800
  endef
@@ -137,7 +145,7 @@ index f63640814..1f68735a3 100644
  endef
  TARGET_DEVICES += glinet_gl-axt1800
  
-@@ -52,7 +61,7 @@ define Device/jdcloud_re-cs-02
+@@ -79,7 +61,7 @@ define Device/jdcloud_re-cs-02
  	BLOCKSIZE := 64k
  	KERNEL_SIZE := 6144k
  	DEVICE_DTS_CONFIG := config@cp03-c3
@@ -146,7 +154,7 @@ index f63640814..1f68735a3 100644
  endef
  TARGET_DEVICES += jdcloud_re-cs-02
  
-@@ -69,7 +78,7 @@ define Device/jdcloud_re-cs-07
+@@ -96,7 +78,7 @@ define Device/jdcloud_re-cs-07
  endef
  TARGET_DEVICES += jdcloud_re-cs-07
  
@@ -155,67 +163,54 @@ index f63640814..1f68735a3 100644
  	$(call Device/FitImage)
  	$(call Device/EmmcImage)
  	DEVICE_VENDOR := JDCloud
-@@ -78,9 +87,9 @@ define Device/jdcloud_re-ss-01
+@@ -105,28 +87,9 @@ define Device/jdcloud_re-ss-01
  	BLOCKSIZE := 64k
  	KERNEL_SIZE := 6144k
  	DEVICE_DTS_CONFIG := config@cp03-c2
 -	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-ss-01
+-endef
+-TARGET_DEVICES += jdcloud_re-ss-01
+-
+-define Device/link_nn6000-v1
+-	$(call Device/FitImage)
+-	$(call Device/EmmcImage)
+-	DEVICE_VENDOR := Link
+-	DEVICE_MODEL := NN6000 v1
+-	SOC := ipq6000
+-	KERNEL_SIZE := 6144k
+-	DEVICE_DTS_CONFIG := config@cp03-c1
+-	DEVICE_PACKAGES := ipq-wifi-link_nn6000 kmod-fs-f2fs f2fs-tools
+-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 +	DEVICE_PACKAGES := ipq-wifi-jdcloud_ax1800pro
  endef
--TARGET_DEVICES += jdcloud_re-ss-01
+-TARGET_DEVICES += link_nn6000-v1
+-
+-define Device/link_nn6000-v2
+-	$(Device/link_nn6000-v1)
+-	DEVICE_MODEL := NN6000 v2
+-endef
+-TARGET_DEVICES += link_nn6000-v2
 +TARGET_DEVICES += jdcloud_ax1800-pro
  
  define Device/linksys_mr7350
  	$(call Device/FitImage)
-diff --git a/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network b/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
-index 348437b84..5e421ed54 100644
---- a/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
-+++ b/target/linux/qualcommax/ipq60xx/base-files/etc/board.d/02_network
-@@ -13,7 +13,7 @@ ipq60xx_setup_interfaces()
- 	case "$board" in
- 	cmiot,ax18|\
- 	jdcloud,re-cs-07|\
--	jdcloud,re-ss-01|\
-+	jdcloud,ax1800-pro|\
- 	qihoo,360v6|\
- 	redmi,ax5-*|\
- 	xiaomi,rm1800)
-diff --git a/target/linux/qualcommax/ipq60xx/base-files/etc/hotplug.d/firmware/11-ath11k-caldata b/target/linux/qualcommax/ipq60xx/base-files/etc/hotplug.d/firmware/11-ath11k-caldata
-index b82946cdc..62755af8f 100644
---- a/target/linux/qualcommax/ipq60xx/base-files/etc/hotplug.d/firmware/11-ath11k-caldata
-+++ b/target/linux/qualcommax/ipq60xx/base-files/etc/hotplug.d/firmware/11-ath11k-caldata
-@@ -17,7 +17,7 @@ case "$FIRMWARE" in
- 		caldata_extract "0:art" 0x1000 0x10000
- 		;;
- 	jdcloud,re-cs-02|\
--	jdcloud,re-ss-01|\
-+	jdcloud,ax1800-pro|\
- 	redmi,ax5-jdcloud)
- 		caldata_extract_mmc "0:ART" 0x1000 0x10000
- 		;;
-diff --git a/target/linux/qualcommax/ipq60xx/base-files/lib/preinit/81_fix_eeprom b/target/linux/qualcommax/ipq60xx/base-files/lib/preinit/81_fix_eeprom
-index 34b91f4df..72ec21271 100644
---- a/target/linux/qualcommax/ipq60xx/base-files/lib/preinit/81_fix_eeprom
-+++ b/target/linux/qualcommax/ipq60xx/base-files/lib/preinit/81_fix_eeprom
-@@ -3,7 +3,7 @@
- preinit_fix_eeprom() {
- 	case $(board_name) in
- 	jdcloud,re-cs-02|\
--	jdcloud,re-ss-01|\
-+	jdcloud,ax1800-pro|\
- 	redmi,ax5-jdcloud)
- 		mmc_part=$(find_mmc_part 0:ART)
- 		FIRMWARE=""ath11k/IPQ6018/hw1.0/cal-ahb-c000000.wifi.bin""
-diff --git a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh b/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
-index 6cb255df7..b6378f532 100644
---- a/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
-+++ b/target/linux/qualcommax/ipq60xx/base-files/lib/upgrade/platform.sh
-@@ -19,7 +19,7 @@ platform_do_upgrade() {
- 		;;
- 	jdcloud,re-cs-02|\
- 	jdcloud,re-cs-07|\
--	jdcloud,re-ss-01|\
-+	jdcloud,ax1800-pro|\
- 	redmi,ax5-jdcloud)
- 		kernelname="0:HLOS"
- 		rootfsname="rootfs"
+@@ -145,19 +108,6 @@ define Device/linksys_mr7350
+ endef
+ TARGET_DEVICES += linksys_mr7350
+ 
+-define Device/philips_ly1800
+-	$(call Device/FitImage)
+-	$(call Device/EmmcImage)
+-	DEVICE_VENDOR := Philips
+-	DEVICE_MODEL := LY1800
+-	SOC := ipq6010
+-	BLOCKSIZE := 64k
+-	KERNEL_SIZE := 6144k
+-	DEVICE_DTS_CONFIG := config@cp01-c1
+-	DEVICE_PACKAGES := ipq-wifi-philips_ly1800
+-endef
+-TARGET_DEVICES += philips_ly1800
+-
+ define Device/qihoo_360v6
+ 	$(call Device/FitImage)
+ 	$(call Device/UbiFit)
