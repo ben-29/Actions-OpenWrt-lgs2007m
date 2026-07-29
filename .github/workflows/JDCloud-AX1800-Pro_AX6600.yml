@@ -160,11 +160,36 @@ jobs:
         if: (!cancelled())
         run: df -hT
 
+      - name: 整理文件并重命名0
+        if: (!cancelled())
+        run: |
+          set -x
+      
+          echo "准备进入 openwrt，当前目录：$PWD"
+          cd openwrt
+          echo "已进入：$PWD"
+          
+          echo "bin/targets 完整目录内容："
+          find bin/targets -maxdepth 3 -print || true
+      
+          echo "bin/targets/*/* 匹配结果："
+          printf '%s\n' bin/targets/*/*
+      
+          echo ".config 中包含 DEVICE 的配置："
+          grep -n 'DEVICE' .config || true
+      
+          grep_status=0
+          matched_lines=$(grep '^CONFIG_TARGET.*DEVICE_.*=y' .config | grep -v 'PER_DEVICE' | grep -v 'DEVICE_PACKAGES') || grep_status=$?
+      
+          echo "grep 退出码: $grep_status"
+          echo "过滤后的设备配置: <$matched_lines>"
+    
       - name: 整理文件并重命名
         id: organize
         if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt
+          echo $PWD
           matched_lines=$(grep '^CONFIG_TARGET.*DEVICE_.*=y' .config | grep -v 'PER_DEVICE' | grep -v 'DEVICE_PACKAGES')
           echo "过滤后的设备配置: $matched_lines"
           mapfile -t devices < <(echo "$matched_lines" | sed -n 's/.*DEVICE_\([^=]*\)=y/\1/p')
