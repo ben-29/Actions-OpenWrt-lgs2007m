@@ -44,7 +44,7 @@ env:
 
 jobs:
   build:
-    runs-on: [ubuntu-24.04]
+    runs-on: [ubuntu-24.04, self-hosted, Linux, X64, docker]
 
     permissions:
       contents: write
@@ -64,7 +64,7 @@ jobs:
           sudo -E apt-get -yqq autoremove --purge
           sudo -E apt-get -yqq clean
           sudo mkdir -p /workdir
-          sudo chown "$USER:$(id -gn)" /workdir
+          sudo chown "$(id -u):$(id -gn)" /workdir
 
       - name: 清理磁盘空间(Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -83,7 +83,7 @@ jobs:
 
       - name: free disk space
         run: |
-          sudo swapoff -a
+          # sudo swapoff -a
           sudo rm -rf /swapfile /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo apt clean
           df -h
